@@ -6,16 +6,23 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "dynamodb:start": "./scripts/start-dynamodb.sh",
+    "dynamodb:stop": "./scripts/stop-dynamodb.sh",
+    "dynamodb:admin": "open http://localhost:8001",
+    "dynamodb:init": "tsx scripts/init-dynamodb.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.879.0",
+    "@aws-sdk/lib-dynamodb": "^3.879.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "next": "15.5.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-icons": "^5.5.0",
-    "recharts": "^3.1.2"
+    "recharts": "^3.1.2",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -23,9 +30,11 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/uuid": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
     "tailwindcss": "^4",
+    "tsx": "^4.20.5",
     "typescript": "^5"
   }
 }

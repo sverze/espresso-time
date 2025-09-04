@@ -33,21 +33,32 @@ function AppContent() {
     setDeletingShot(shot);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deletingShot) {
-      deleteShot(deletingShot.id);
-      setDeletingShot(undefined);
+      try {
+        await deleteShot(deletingShot.id);
+        setDeletingShot(undefined);
+      } catch (error) {
+        console.error('Failed to delete shot:', error);
+        // Error is handled by the data context with toast notifications
+      }
     }
   };
 
-  const handleFormSubmit = (formData: EspressoShotFormData) => {
-    if (editingShot) {
-      updateShot(editingShot.id, formData);
-    } else {
-      addShot(formData);
+  const handleFormSubmit = async (formData: EspressoShotFormData) => {
+    try {
+      if (editingShot) {
+        await updateShot(editingShot.id, formData);
+      } else {
+        await addShot(formData);
+      }
+      setIsAddModalOpen(false);
+      setEditingShot(undefined);
+    } catch (error) {
+      console.error('Failed to submit form:', error);
+      // Error is handled by the data context with toast notifications
+      // Keep modal open so user can retry
     }
-    setIsAddModalOpen(false);
-    setEditingShot(undefined);
   };
 
   const handleCloseModal = () => {
