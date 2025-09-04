@@ -39,3 +39,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# playwright
+.playwright-mcp/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# DynamoDB Local
+.dynamodb/
+dynamodb-local/
+
+# Docker
+.docker/
