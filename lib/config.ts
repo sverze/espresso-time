@@ -1,7 +1,7 @@
 // Environment detection
 const isLocal = process.env.NODE_ENV === 'development';
 const isProduction = process.env.NODE_ENV === 'production';
-const isAmplify = !!process.env.AWS_REGION && !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+const isAmplify = !!(process.env.REGION || process.env.AWS_REGION) && !!process.env.AWS_LAMBDA_FUNCTION_NAME;
 
 export const config = {
   // Environment flags
@@ -19,7 +19,7 @@ export const config = {
       : undefined,
     
     // AWS region
-    region: process.env.AWS_REGION || process.env.DYNAMODB_REGION || 'us-east-1',
+    region: process.env.REGION || process.env.AWS_REGION || process.env.DYNAMODB_REGION || 'us-east-1',
     
     // Credentials (only needed for local development)
     // In AWS, IAM roles handle authentication automatically
