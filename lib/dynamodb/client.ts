@@ -6,27 +6,28 @@ console.log('DynamoDB Config:', {
   endpoint: config.dynamodb.endpoint,
   region: config.dynamodb.region,
   isLocal: config.isLocal,
-  env: config.environment
+  isAmplify: config.isAmplify,
+  environment: config.environment
 });
 
-// Create DynamoDB client with forced local configuration for development
-const clientConfig = config.isLocal ? {
-  endpoint: 'http://localhost:8000',
-  region: 'us-east-1',
-  credentials: {
-    accessKeyId: 'dummy',
-    secretAccessKey: 'dummy',
-  },
-} : {
-  endpoint: config.dynamodb.endpoint,
+// Create DynamoDB client configuration based on environment
+const clientConfig: { region: string; endpoint?: string; credentials?: { accessKeyId: string; secretAccessKey: string } } = {
   region: config.dynamodb.region,
-  credentials: {
-    accessKeyId: config.dynamodb.accessKeyId,
-    secretAccessKey: config.dynamodb.secretAccessKey,
-  },
 };
 
-console.log('Using DynamoDB client config:', clientConfig);
+// Add endpoint and credentials only for local development
+if (config.isLocal && config.dynamodb.endpoint) {
+  clientConfig.endpoint = config.dynamodb.endpoint;
+}
+
+if (config.dynamodb.credentials) {
+  clientConfig.credentials = config.dynamodb.credentials;
+}
+
+console.log('Using DynamoDB client config:', {
+  ...clientConfig,
+  credentials: clientConfig.credentials ? 'set' : 'using IAM role'
+});
 
 const dynamoDBClient = new DynamoDBClient(clientConfig);
 

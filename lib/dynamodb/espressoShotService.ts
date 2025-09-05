@@ -57,6 +57,7 @@ export class EspressoShotService {
     const newShot: EspressoShot = {
       id: uuidv4(),
       ...formData,
+      dateTime: now,
       createdAt: now,
     };
 

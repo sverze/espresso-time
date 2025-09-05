@@ -1,39 +1,55 @@
-import { EspressoShot } from '../dynamodb/espressoShotService';
+import { EspressoShot, EspressoShotFormData } from '../types';
 
 export class EspressoShotAPI {
   private baseUrl = '/api/espresso-shots';
 
+  private getAuthHeaders(): HeadersInit {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('espresso-time-token') : null;
+    return {
+      'Content-Type': 'application/json',
+      ...(token && { 'Authorization': `Bearer ${token}` })
+    };
+  }
+
   async getAllShots(): Promise<EspressoShot[]> {
     try {
-      const response = await fetch(this.baseUrl);
+      const response = await fetch(this.baseUrl, {
+        headers: this.getAuthHeaders(),
+      });
+      
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Authentication required');
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+      
       return await response.json();
     } catch (error) {
       console.error('Error getting espresso shots via API:', error);
-      throw new Error('Failed to get espresso shots');
+      throw error;
     }
   }
 
-  async createShot(shotData: Omit<EspressoShot, 'id' | 'createdAt' | 'updatedAt'>): Promise<EspressoShot> {
+  async createShot(shotData: EspressoShotFormData): Promise<EspressoShot> {
     try {
       const response = await fetch(this.baseUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.getAuthHeaders(),
         body: JSON.stringify(shotData),
       });
       
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Authentication required');
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       return await response.json();
     } catch (error) {
       console.error('Error creating espresso shot via API:', error);
-      throw new Error('Failed to create espresso shot');
+      throw error;
     }
   }
 }

@@ -9,6 +9,7 @@ import Modal from '@/components/Modal';
 import AddEspressoShotForm from '@/components/AddEspressoShotForm';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import ToastContainer from '@/components/ToastContainer';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import { DataProvider, useData } from '@/lib/dataContext';
 import { TabType, EspressoShotFormData, EspressoShot } from '@/lib/types';
 
@@ -127,8 +128,10 @@ function AppContent() {
 
 export default function Home() {
   return (
-    <DataProvider>
-      <AppContent />
-    </DataProvider>
+    <ProtectedRoute>
+      <DataProvider>
+        <AppContent />
+      </DataProvider>
+    </ProtectedRoute>
   );
 }

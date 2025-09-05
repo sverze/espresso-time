@@ -70,7 +70,7 @@ export default function AddEspressoShotForm({ onSubmit, onCancel, editingShot }:
     return Array.from(roastMap.values());
   }, [shots]);
 
-  const updateFormData = (field: keyof EspressoShotFormData, value: any) => {
+  const updateFormData = (field: keyof EspressoShotFormData, value: string | number | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {

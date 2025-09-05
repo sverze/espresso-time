@@ -37,7 +37,6 @@ export const createTableCommands = [
         Projection: {
           ProjectionType: 'ALL',
         },
-        BillingMode: 'PAY_PER_REQUEST',
       },
       {
         IndexName: 'RoasterDateIndex',
@@ -54,7 +53,6 @@ export const createTableCommands = [
         Projection: {
           ProjectionType: 'ALL',
         },
-        BillingMode: 'PAY_PER_REQUEST',
       },
     ],
     BillingMode: 'PAY_PER_REQUEST', // On-demand pricing

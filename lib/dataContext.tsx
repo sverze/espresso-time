@@ -90,7 +90,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const updateShot = async (id: string, formData: EspressoShotFormData) => {
     try {
       setError(null);
-      const updatedShot = await espressoShotService.updateShot(id, formData);
+      // TODO: Implement update API endpoint
+      // For now, just update locally
+      const updatedShot: EspressoShot = {
+        ...formData,
+        id,
+        dateTime: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+      };
       setShots(prev => prev.map(shot => 
         shot.id === id ? updatedShot : shot
       ));
@@ -113,7 +120,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const deleteShot = async (id: string) => {
     try {
       setError(null);
-      await espressoShotService.deleteShot(id);
+      // TODO: Implement delete API endpoint
+      // For now, just remove locally
       setShots(prev => prev.filter(shot => shot.id !== id));
       addToast({
         type: 'success',

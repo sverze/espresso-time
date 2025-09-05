@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { EspressoShotService } from '@/lib/dynamodb/espressoShotService';
+import { withAuth, AuthenticatedRequest } from '@/lib/middleware';
 
 const espressoShotService = new EspressoShotService();
 
-export async function GET() {
+export const GET = withAuth(async (_request: AuthenticatedRequest) => {
   try {
     const shots = await espressoShotService.getAllShots();
     return NextResponse.json(shots);
@@ -14,9 +15,9 @@ export async function GET() {
       { status: 500 }
     );
   }
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (request: AuthenticatedRequest) => {
   try {
     const shotData = await request.json();
     const newShot = await espressoShotService.createShot(shotData);
@@ -28,4 +29,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
