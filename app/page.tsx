@@ -75,7 +75,7 @@ function AppContent() {
         return <Entries onEditShot={handleEditShot} onDeleteShot={handleDeleteShot} />;
       case 'insights':
         return (
-          <div className="max-w-[1344px] mx-auto px-8 py-8">
+          <div className="max-w-[1344px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
             <div className="text-center text-gray-500 text-lg">
               Insights content coming soon...
             </div>
@@ -87,7 +87,7 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
       <Header 
         entryCount={shots.length} 
         onAddShot={handleAddShot} 

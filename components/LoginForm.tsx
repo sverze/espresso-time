@@ -20,12 +20,12 @@ export default function LoginForm({ onLogin, isLoading, error }: LoginFormProps)
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-coffee-50 to-coffee-100">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-100">
       <div className="max-w-md w-full mx-4">
         <div className="bg-white rounded-lg shadow-xl p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-coffee-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl">☕</span>
             </div>
             <h1 className="text-2xl font-bold text-gray-900">Espresso Time</h1>
@@ -56,7 +56,7 @@ export default function LoginForm({ onLogin, isLoading, error }: LoginFormProps)
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-coffee-500 focus:border-coffee-500"
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500"
                   placeholder="Enter your username"
                 />
               </div>
@@ -77,7 +77,7 @@ export default function LoginForm({ onLogin, isLoading, error }: LoginFormProps)
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-coffee-500 focus:border-coffee-500"
+                  className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500"
                   placeholder="Enter your password"
                 />
                 <button
@@ -98,7 +98,7 @@ export default function LoginForm({ onLogin, isLoading, error }: LoginFormProps)
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-coffee-600 hover:bg-coffee-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-coffee-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <div className="flex items-center">

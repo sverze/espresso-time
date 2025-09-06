@@ -15,36 +15,36 @@ export default function Header({ entryCount, onAddShot }: HeaderProps) {
 
   return (
     <div className="w-full bg-white border-b border-gray-200">
-      <div className="max-w-[1344px] mx-auto px-8 py-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <div className="max-w-[1344px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             {/* Coffee Icon */}
             <div className="w-7 h-7">
-              <TbCoffee className="w-full h-full text-gray-900" strokeWidth={2.33} />
+              <TbCoffee className="w-full h-full text-amber-700" strokeWidth={2.33} />
             </div>
             
             <div className="flex flex-col">
-              <h1 className="text-[25px] font-normal text-gray-900 leading-[31px]">
+              <h1 className="text-xl sm:text-[25px] font-normal text-gray-900 leading-tight sm:leading-[31px]">
                 Espresso Time
               </h1>
-              <p className="text-[13px] font-normal text-gray-500 leading-[21px] mt-1">
+              <p className="text-xs sm:text-[13px] font-normal text-gray-500 leading-relaxed sm:leading-[21px] mt-1 hidden sm:block">
                 Perfect your espresso shots and master your machine settings
               </p>
             </div>
           </div>
           
-          <div className="flex items-center gap-6">
-            {/* User Info */}
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-md">
+          <div className="flex items-center gap-2 sm:gap-4 lg:gap-6 w-full sm:w-auto">
+            {/* User Info - Hidden on small screens */}
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-amber-100 rounded-md">
               <FiUser className="w-3.5 h-3.5 text-gray-600" />
-              <span className="text-[11px] font-normal text-gray-700 leading-[17px]">
+              <span className="text-[11px] font-normal text-amber-800 leading-[17px]">
                 {user?.username}
               </span>
             </div>
 
             {/* Entry Count Badge */}
             <div className="px-2 py-1 border border-gray-300 rounded-md">
-              <span className="text-[11px] font-normal text-gray-900 leading-[17px]">
+              <span className="text-[10px] sm:text-[11px] font-normal text-gray-900 leading-[17px]">
                 {entryCount} entries
               </span>
             </div>
@@ -52,22 +52,23 @@ export default function Header({ entryCount, onAddShot }: HeaderProps) {
             {/* Add Shot Button */}
             <button
               onClick={onAddShot}
-              className="flex items-center gap-2.5 px-4 py-2.5 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"
+              className="flex items-center gap-1.5 sm:gap-2.5 px-3 sm:px-4 py-2 sm:py-2.5 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition-colors flex-1 sm:flex-none justify-center"
             >
               <HiPlus className="w-3.5 h-3.5" strokeWidth={1.17} />
-              <span className="text-[11.5px] font-normal leading-[17px]">
-                Add Espresso Shot
+              <span className="text-[10px] sm:text-[11.5px] font-normal leading-[17px]">
+                <span className="sm:hidden">Add</span>
+                <span className="hidden sm:inline">Add Espresso Shot</span>
               </span>
             </button>
 
             {/* Logout Button */}
             <button
               onClick={logout}
-              className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-md transition-colors"
+              className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-md transition-colors"
               title="Sign out"
             >
               <FiLogOut className="w-4 h-4" />
-              <span className="text-[11px] font-normal leading-[17px]">
+              <span className="text-[10px] sm:text-[11px] font-normal leading-[17px] hidden sm:inline">
                 Sign out
               </span>
             </button>

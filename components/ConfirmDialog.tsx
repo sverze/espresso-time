@@ -31,7 +31,7 @@ export default function ConfirmDialog({
 
   const confirmButtonStyles = confirmVariant === 'danger' 
     ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500 text-white'
-    : 'bg-gray-900 hover:bg-gray-800 focus:ring-gray-500 text-white';
+    : 'bg-amber-600 hover:bg-amber-700 focus:ring-amber-500 text-white';
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="" size="sm">
@@ -56,7 +56,7 @@ export default function ConfirmDialog({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-amber-300 rounded-md hover:bg-amber-50 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
           >
             {cancelText}
           </button>

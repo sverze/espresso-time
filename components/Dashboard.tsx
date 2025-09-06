@@ -3,7 +3,6 @@
 import { useMemo } from 'react';
 import StatCard from './StatCard';
 import GrinderPerformanceChart from './charts/GrinderPerformanceChart';
-import ShotTypeChart from './charts/ShotTypeChart';
 import ExtractionTimeChart from './charts/ExtractionTimeChart';
 import RatioAnalysisChart from './charts/RatioAnalysisChart';
 import { useData } from '@/lib/dataContext';
@@ -57,15 +56,15 @@ export default function Dashboard() {
   }, [shots]);
 
   return (
-    <div className="max-w-[1344px] mx-auto px-8 py-8">
+    <div className="max-w-[1344px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4 mb-6 sm:mb-8">
         <div className="xl:col-span-2">
           <StatCard
             title="Total Shots"
             value={dashboardStats.totalShots}
             icon={<TbCoffee strokeWidth={1.17} />}
-            className="h-[131.5px]"
+            className="h-[100px] sm:h-[131.5px]"
           />
         </div>
         
@@ -74,7 +73,7 @@ export default function Dashboard() {
             title="Average Rating"
             value={`${dashboardStats.averageRating}/10`}
             icon={<TbStar strokeWidth={1.17} />}
-            className="h-[131.5px]"
+            className="h-[100px] sm:h-[131.5px]"
           />
         </div>
         
@@ -84,7 +83,7 @@ export default function Dashboard() {
             value={`1:${dashboardStats.averageRatio}`}
             subtitle="Target: 1:2.0"
             icon={<TbScale strokeWidth={1.17} />}
-            className="h-[131.5px]"
+            className="h-[100px] sm:h-[131.5px]"
           />
         </div>
         
@@ -93,7 +92,7 @@ export default function Dashboard() {
             title="Favorite Roaster"
             value={dashboardStats.favoriteRoaster}
             icon={<TbHeart strokeWidth={1.17} />}
-            className="h-[131.5px]"
+            className="h-[100px] sm:h-[131.5px]"
           />
         </div>
         
@@ -103,16 +102,16 @@ export default function Dashboard() {
             value={`${dashboardStats.averageGrindTime}s`}
             subtitle="Per shot"
             icon={<TbClock strokeWidth={1.17} />}
-            className="h-[131.5px]"
+            className="h-[100px] sm:h-[131.5px]"
           />
         </div>
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white border border-gray-200 rounded-[12.75px] p-6 h-[384px]">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+        <div className="bg-white/80 backdrop-blur-sm border border-amber-200 rounded-[12.75px] p-6 h-[384px] shadow-sm">
           <div className="flex items-center gap-3 mb-6">
-            <TbChartBar className="w-3.5 h-3.5 text-gray-900" strokeWidth={1.17} />
+            <TbChartBar className="w-3.5 h-3.5 text-amber-700" strokeWidth={1.17} />
             <h3 className="text-[13px] font-normal text-gray-900 leading-[14px]">
               Grinder Setting Performance
             </h3>
@@ -120,16 +119,10 @@ export default function Dashboard() {
           <GrinderPerformanceChart />
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-[12.75px] p-6 h-[384px]">
-          <h3 className="text-[13px] font-normal text-gray-900 leading-[14px] mb-6">
-            Shot Type Distribution
-          </h3>
-          <ShotTypeChart />
-        </div>
 
-        <div className="bg-white border border-gray-200 rounded-[12.75px] p-6 h-[384px]">
+        <div className="bg-white/80 backdrop-blur-sm border border-amber-200 rounded-[12.75px] p-6 h-[384px] shadow-sm">
           <div className="flex items-center gap-3 mb-6">
-            <TbChartBar className="w-3.5 h-3.5 text-gray-900" strokeWidth={1.17} />
+            <TbChartBar className="w-3.5 h-3.5 text-amber-700" strokeWidth={1.17} />
             <h3 className="text-[13px] font-normal text-gray-900 leading-[14px]">
               Extraction Time vs Quality
             </h3>
@@ -137,17 +130,20 @@ export default function Dashboard() {
           <ExtractionTimeChart />
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-[12.75px] p-6 h-[384px]">
-          <h3 className="text-[13px] font-normal text-gray-900 leading-[14px] mb-6">
-            Extraction Ratio Analysis
-          </h3>
+        <div className="bg-white/80 backdrop-blur-sm border border-amber-200 rounded-[12.75px] p-6 h-[384px] shadow-sm">
+          <div className="flex items-center gap-3 mb-6">
+            <TbChartBar className="w-3.5 h-3.5 text-amber-700" strokeWidth={1.17} />
+            <h3 className="text-[13px] font-normal text-gray-900 leading-[14px]">
+              Extraction Ratio Analysis
+            </h3>
+          </div>
           <RatioAnalysisChart />
         </div>
       </div>
 
       {/* Top Performing Roasts Section */}
-      <div className="mt-8">
-        <div className="bg-white border border-gray-200 rounded-[12.75px] p-6">
+      <div className="mt-6 sm:mt-8">
+        <div className="bg-white/80 backdrop-blur-sm border border-amber-200 rounded-[12.75px] p-6 h-[384px] shadow-sm">
           <h3 className="text-[13px] font-normal text-gray-900 leading-[14px] mb-6">
             Top Performing Roasts
           </h3>

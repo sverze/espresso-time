@@ -81,7 +81,7 @@ export default function Entries({ onEditShot, onDeleteShot }: EntriesProps) {
   };
 
   return (
-    <div className="max-w-[1626px] mx-auto px-8 py-8">
+    <div className="max-w-[1626px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
       <FiltersPanel filters={filters} onFiltersChange={setFilters} />
       
       <div className="space-y-8">
