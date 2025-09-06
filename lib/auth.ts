@@ -22,6 +22,19 @@ export class AuthService {
     this.jwtSecret = config.auth.jwtSecret;
     this.adminUsername = config.auth.adminUsername;
     this.adminPassword = config.auth.adminPassword;
+    
+    // Debug logging for deployment troubleshooting
+    console.log('🔐 AuthService initialized:', {
+      environment: process.env.NODE_ENV,
+      hasJwtSecret: !!this.jwtSecret,
+      jwtSecretLength: this.jwtSecret?.length || 0,
+      hasAdminUsername: !!this.adminUsername,
+      adminUsername: this.adminUsername, // Safe to log username
+      hasAdminPassword: !!this.adminPassword,
+      adminPasswordLength: this.adminPassword?.length || 0,
+      isAmplify: !!(process.env.REGION || process.env.AWS_REGION),
+      timestamp: new Date().toISOString()
+    });
   }
 
   /**
@@ -30,7 +43,26 @@ export class AuthService {
   async authenticate(username: string, password: string): Promise<boolean> {
     // For now, we only support admin user with hardcoded credentials
     // In a real app, you'd hash passwords and store them in a database
-    return username === this.adminUsername && password === this.adminPassword;
+    
+    console.log('🔍 Authentication attempt:', {
+      providedUsername: username,
+      expectedUsername: this.adminUsername,
+      usernameMatch: username === this.adminUsername,
+      hasPassword: !!password,
+      passwordLength: password?.length || 0,
+      hasExpectedPassword: !!this.adminPassword,
+      expectedPasswordLength: this.adminPassword?.length || 0,
+      timestamp: new Date().toISOString()
+    });
+    
+    const isValid = username === this.adminUsername && password === this.adminPassword;
+    
+    console.log('✅ Authentication result:', {
+      success: isValid,
+      timestamp: new Date().toISOString()
+    });
+    
+    return isValid;
   }
 
   /**
