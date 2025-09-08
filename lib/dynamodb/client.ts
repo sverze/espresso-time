@@ -1,5 +1,7 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { fromContainerMetadata, fromNodeProviderChain } from "@aws-sdk/credential-providers";
+import type { AwsCredentialIdentityProvider } from "@aws-sdk/types";
 import { config } from "../config";
 
 console.log('DynamoDB Config:', {
@@ -11,22 +13,45 @@ console.log('DynamoDB Config:', {
 });
 
 // Create DynamoDB client configuration based on environment
-const clientConfig: { region: string; endpoint?: string; credentials?: { accessKeyId: string; secretAccessKey: string } } = {
+const clientConfig: { 
+  region: string; 
+  endpoint?: string; 
+  credentials?: AwsCredentialIdentityProvider | { accessKeyId: string; secretAccessKey: string };
+} = {
   region: config.dynamodb.region,
 };
 
 // Add endpoint and credentials only for local development
 if (config.isLocal && config.dynamodb.endpoint) {
   clientConfig.endpoint = config.dynamodb.endpoint;
-}
-
-if (config.dynamodb.credentials) {
-  clientConfig.credentials = config.dynamodb.credentials;
+  // For local development, use static credentials
+  if (config.dynamodb.credentials) {
+    clientConfig.credentials = config.dynamodb.credentials;
+  }
+} else {
+  // For AWS/Amplify environment, use explicit credential providers with retry logic
+  try {
+    // First try container metadata (ECS/Lambda/Fargate)
+    clientConfig.credentials = fromContainerMetadata({
+      maxRetries: 5,
+      timeout: 5000, // 5 seconds
+    });
+    console.log('Using container metadata credentials provider');
+  } catch (error) {
+    // Fallback to node provider chain
+    console.log('Container metadata failed, using node provider chain:', error);
+    clientConfig.credentials = fromNodeProviderChain({
+      maxRetries: 3,
+    });
+  }
 }
 
 console.log('Using DynamoDB client config:', {
-  ...clientConfig,
-  credentials: clientConfig.credentials ? 'set' : 'using IAM role'
+  region: clientConfig.region,
+  endpoint: clientConfig.endpoint || 'default AWS endpoint',
+  credentials: clientConfig.credentials ? 'explicit credential provider configured' : 'using IAM role',
+  isLocal: config.isLocal,
+  isAmplify: config.isAmplify,
 });
 
 const dynamoDBClient = new DynamoDBClient(clientConfig);
