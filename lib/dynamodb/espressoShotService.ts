@@ -2,11 +2,15 @@ import { PutCommand, GetCommand, ScanCommand, UpdateCommand, DeleteCommand } fro
 import { v4 as uuidv4 } from 'uuid';
 import { docClient } from "./client";
 import { DynamoEspressoShot } from "./schema";
-import { TABLE_NAMES } from "../config";
+import { TABLE_NAMES, getTableName } from "../config";
 import { EspressoShot, EspressoShotFormData } from "../types";
 
 export class EspressoShotService {
-  private tableName = TABLE_NAMES.ESPRESSO_SHOTS;
+  private tableName = getTableName(TABLE_NAMES.ESPRESSO_SHOTS);
+
+  constructor() {
+    console.log('🔧 EspressoShotService initialized with table name:', this.tableName);
+  }
 
   // Convert DynamoDB item to application format
   private fromDynamoItem(item: DynamoEspressoShot): EspressoShot {

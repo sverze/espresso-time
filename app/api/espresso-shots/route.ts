@@ -6,12 +6,19 @@ const espressoShotService = new EspressoShotService();
 
 export const GET = withAuth(async (_request: AuthenticatedRequest) => {
   try {
+    console.log('🔧 GET /api/espresso-shots called');
     const shots = await espressoShotService.getAllShots();
+    console.log('🔧 Successfully retrieved shots:', shots.length);
     return NextResponse.json(shots);
   } catch (error) {
-    console.error('API Error getting espresso shots:', error);
+    console.error('🔧 API Error getting espresso shots:', error);
+    console.error('🔧 Error details:', {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return NextResponse.json(
-      { error: 'Failed to get espresso shots' },
+      { error: 'Failed to get espresso shots', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }
