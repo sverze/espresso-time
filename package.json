@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.879.0",
-    "@aws-sdk/credential-providers": "^3.883.0",
     "@aws-sdk/lib-dynamodb": "^3.879.0",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
