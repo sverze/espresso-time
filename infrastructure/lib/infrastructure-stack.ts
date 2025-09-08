@@ -49,7 +49,11 @@ export class InfrastructureStack extends cdk.Stack {
     // IAM Role for Amplify with DynamoDB permissions
     this.amplifyRole = new iam.Role(this, 'AmplifyExecutionRole', {
       roleName: 'EspressoTimeAmplifyRole',
-      assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
+      assumedBy: new iam.CompositePrincipal(
+        new iam.ServicePrincipal('amplify.amazonaws.com'),
+        new iam.ServicePrincipal('lambda.amazonaws.com'),
+        new iam.ServicePrincipal('edgelambda.amazonaws.com')
+      ),
       description: 'Execution role for Espresso Time Amplify app to access DynamoDB',
     });
 
