@@ -12,7 +12,7 @@ export class InfrastructureStack extends cdk.Stack {
 
     // DynamoDB Table for Espresso Shots
     this.espressoShotsTable = new dynamodb.Table(this, 'EspressoShotsTable', {
-      tableName: 'espresso-shots',
+      tableName: 'prod-espresso-shots',
       partitionKey: {
         name: 'id',
         type: dynamodb.AttributeType.STRING,
@@ -55,6 +55,19 @@ export class InfrastructureStack extends cdk.Stack {
 
     // Grant read/write permissions to the DynamoDB table
     this.espressoShotsTable.grantReadWriteData(this.amplifyRole);
+
+    // Add CloudWatch Logs permissions for Lambda function logging
+    this.amplifyRole.addToPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+        'logs:CreateLogGroup',
+        'logs:CreateLogStream',
+        'logs:PutLogEvents',
+        'logs:DescribeLogStreams',
+        'logs:DescribeLogGroups',
+      ],
+      resources: ['*'],
+    }));
 
     // Output the table name and role ARN for reference
     new cdk.CfnOutput(this, 'EspressoShotsTableName', {
