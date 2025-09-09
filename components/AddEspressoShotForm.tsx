@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { EspressoShotFormData, EspressoShot } from '@/lib/types';
 import { useData } from '@/lib/dataContext';
-import { formatRatio, calculateRatio } from '@/lib/mockData';
+import { formatRatio } from '@/lib/mockData';
 import StarRating from './StarRating';
 import { TbSettings, TbScale } from 'react-icons/tb';
 import { HiChevronDown } from 'react-icons/hi2';
@@ -54,20 +54,33 @@ export default function AddEspressoShotForm({ onSubmit, onCancel, editingShot }:
 
   const [errors, setErrors] = useState<Partial<Record<keyof EspressoShotFormData, string>>>({});
 
-  // Get unique roasts from existing shots
+  // Get unique roast combinations (including roast dates) from existing shots
   const existingRoasts = useMemo(() => {
     const roastMap = new Map();
     shots.forEach(shot => {
-      const key = `${shot.roasterName}|${shot.roastName}`;
+      // Include roast date in the key to separate different bags
+      const roastDateKey = shot.roastDate || 'unknown';
+      const key = `${shot.roasterName}|${shot.roastName}|${roastDateKey}`;
       if (!roastMap.has(key)) {
         roastMap.set(key, {
           roasterName: shot.roasterName,
           roastName: shot.roastName,
-          roastDate: shot.roastDate
+          roastDate: shot.roastDate,
+          mostRecentShot: shot.dateTime
         });
+      } else {
+        // Keep track of most recent shot for sorting
+        const existing = roastMap.get(key);
+        if (new Date(shot.dateTime) > new Date(existing.mostRecentShot)) {
+          existing.mostRecentShot = shot.dateTime;
+        }
       }
     });
-    return Array.from(roastMap.values());
+    
+    // Sort by most recent shot date and limit to 20 most recent
+    return Array.from(roastMap.values())
+      .sort((a, b) => new Date(b.mostRecentShot).getTime() - new Date(a.mostRecentShot).getTime())
+      .slice(0, 20);
   }, [shots]);
 
   const updateFormData = (field: keyof EspressoShotFormData, value: string | number | boolean) => {
@@ -105,9 +118,6 @@ export default function AddEspressoShotForm({ onSubmit, onCancel, editingShot }:
     }
   };
 
-  const calculatedRatio = useMemo(() => {
-    return calculateRatio(formData.coffeeWeight, formData.outputWeight);
-  }, [formData.coffeeWeight, formData.outputWeight]);
 
   const getTargetWeight = (shotType: string, coffeeWeight: number): string => {
     const multiplier = shotType === 'Single' ? 1.5 : 2.0;
@@ -130,7 +140,7 @@ export default function AddEspressoShotForm({ onSubmit, onCancel, editingShot }:
           </label>
           <div className="relative">
             <select
-              value={formData.isNewRoast ? 'new' : `${formData.roasterName}|${formData.roastName}`}
+              value={formData.isNewRoast ? 'new' : `${formData.roasterName}|${formData.roastName}|${formData.roastDate || 'unknown'}`}
               onChange={(e) => {
                 if (e.target.value === 'new') {
                   updateFormData('isNewRoast', true);
@@ -138,8 +148,12 @@ export default function AddEspressoShotForm({ onSubmit, onCancel, editingShot }:
                   updateFormData('roastName', '');
                   updateFormData('roastDate', '');
                 } else {
-                  const [roasterName, roastName] = e.target.value.split('|');
-                  const roast = existingRoasts.find(r => r.roasterName === roasterName && r.roastName === roastName);
+                  const [roasterName, roastName, roastDateKey] = e.target.value.split('|');
+                  const roast = existingRoasts.find(r => 
+                    r.roasterName === roasterName && 
+                    r.roastName === roastName && 
+                    (r.roastDate || 'unknown') === roastDateKey
+                  );
                   updateFormData('isNewRoast', false);
                   updateFormData('roasterName', roasterName);
                   updateFormData('roastName', roastName);
@@ -149,11 +163,17 @@ export default function AddEspressoShotForm({ onSubmit, onCancel, editingShot }:
               className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
             >
               <option value="new">+ Create New Roast</option>
-              {existingRoasts.map(roast => (
-                <option key={`${roast.roasterName}|${roast.roastName}`} value={`${roast.roasterName}|${roast.roastName}`}>
-                  {roast.roasterName} - {roast.roastName}
-                </option>
-              ))}
+              {existingRoasts.map(roast => {
+                const roastDateDisplay = roast.roastDate 
+                  ? ` (${new Date(roast.roastDate).toLocaleDateString('en-GB')})` 
+                  : '';
+                const key = `${roast.roasterName}|${roast.roastName}|${roast.roastDate || 'unknown'}`;
+                return (
+                  <option key={key} value={key}>
+                    {roast.roasterName} - {roast.roastName}{roastDateDisplay}
+                  </option>
+                );
+              })}
             </select>
             <HiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           </div>

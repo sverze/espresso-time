@@ -19,7 +19,8 @@ export interface EspressoShot {
 export interface RoastGroup {
   roasterName: string;
   roastName: string;
-  date: string;
+  roastDate: string | undefined;
+  date: string; // Keep this for backward compatibility with recent shot date
   shots: EspressoShot[];
   averageRating: number;
   averageRatio: number;

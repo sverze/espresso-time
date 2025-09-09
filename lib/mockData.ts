@@ -148,11 +148,58 @@ export const calculateAverageRatio = (shots: EspressoShot[]): number => {
   return Math.round((sum / shots.length) * 10) / 10;
 };
 
+// Heat map scoring: Calculate how close a shot is to perfect (ratio 1:2, rating 10/10)
+export const calculatePerfectionScore = (shot: EspressoShot): number => {
+  const targetRatio = 2.0;
+  const targetRating = 10;
+  
+  const actualRatio = calculateRatio(shot.coffeeWeight, shot.outputWeight);
+  
+  // Calculate ratio score (0-1, where 1 is perfect)
+  // Use exponential decay for ratio difference to heavily penalize deviations
+  const ratioDiff = Math.abs(actualRatio - targetRatio);
+  const ratioScore = Math.exp(-ratioDiff * 2); // Heavily penalize ratio deviations
+  
+  // Calculate rating score (0-1, where 1 is perfect)
+  const ratingScore = shot.rating / targetRating;
+  
+  // Combined score: 60% ratio weight, 40% rating weight
+  const combinedScore = (ratioScore * 0.6) + (ratingScore * 0.4);
+  
+  return combinedScore;
+};
+
+// Find the best shot in each group based on perfection score
+export const findBestShotsInGroups = (groupedShots: ReturnType<typeof groupShotsByRoast>): Set<string> => {
+  const bestShotIds = new Set<string>();
+  
+  groupedShots.forEach(group => {
+    if (group.shots.length === 0) return;
+    
+    let bestShot = group.shots[0];
+    let bestScore = calculatePerfectionScore(bestShot);
+    
+    group.shots.forEach(shot => {
+      const score = calculatePerfectionScore(shot);
+      if (score > bestScore) {
+        bestScore = score;
+        bestShot = shot;
+      }
+    });
+    
+    bestShotIds.add(bestShot.id);
+  });
+  
+  return bestShotIds;
+};
+
 export const groupShotsByRoast = (shots: EspressoShot[]) => {
   const groups: { [key: string]: EspressoShot[] } = {};
   
   shots.forEach(shot => {
-    const key = `${shot.roasterName} - ${shot.roastName}`;
+    // Include roastDate in the grouping key to separate different bags
+    const roastDateKey = shot.roastDate || 'unknown';
+    const key = `${shot.roasterName} - ${shot.roastName} - ${roastDateKey}`;
     if (!groups[key]) {
       groups[key] = [];
     }
@@ -160,15 +207,20 @@ export const groupShotsByRoast = (shots: EspressoShot[]) => {
   });
   
   return Object.entries(groups).map(([key, shots]) => {
-    const [roasterName, roastName] = key.split(' - ');
+    const keyParts = key.split(' - ');
+    const roasterName = keyParts[0];
+    const roastName = keyParts[1];
+    const roastDate = keyParts[2] === 'unknown' ? undefined : keyParts[2];
+    
     return {
       roasterName,
       roastName,
+      roastDate,
       shots,
       averageRating: calculateAverageRating(shots),
       averageRatio: calculateAverageRatio(shots),
       shotCount: shots.length,
-      // Get the most recent shot's date for the group
+      // Get the most recent shot's date for the group (for sorting purposes)
       date: shots.sort((a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime())[0].dateTime
     };
   });

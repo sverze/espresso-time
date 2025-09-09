@@ -1,8 +1,11 @@
 'use client';
 
+import { useMemo } from 'react';
 import { FilterOptions } from '@/lib/types';
+import { useData } from '@/lib/dataContext';
 import { TbFilter, TbSearch } from 'react-icons/tb';
 import { HiChevronDown } from 'react-icons/hi2';
+import { format } from 'date-fns';
 
 interface FiltersPanelProps {
   filters: FilterOptions;
@@ -10,9 +13,50 @@ interface FiltersPanelProps {
 }
 
 export default function FiltersPanel({ filters, onFiltersChange }: FiltersPanelProps) {
+  const { shots } = useData();
+  
   const updateFilter = (key: keyof FilterOptions, value: string) => {
     onFiltersChange({ ...filters, [key]: value });
   };
+
+  // Generate dynamic roaster options
+  const roasterOptions = useMemo(() => {
+    const roasters = [...new Set(shots.map(shot => shot.roasterName))];
+    return roasters.sort();
+  }, [shots]);
+
+  // Generate dynamic roast options with most recent roast date info
+  const roastOptions = useMemo(() => {
+    // Get unique roast names with their most recent roast date
+    const roastMap = new Map<string, { roastName: string; mostRecentDate?: string; mostRecentShot: string }>;
+    
+    shots.forEach(shot => {
+      const key = shot.roastName;
+      const existing = roastMap.get(key);
+      
+      if (!existing || new Date(shot.dateTime) > new Date(existing.mostRecentShot)) {
+        roastMap.set(key, {
+          roastName: shot.roastName,
+          mostRecentDate: shot.roastDate,
+          mostRecentShot: shot.dateTime
+        });
+      }
+    });
+    
+    // Convert to array and sort by most recent shot date
+    return Array.from(roastMap.values())
+      .sort((a, b) => new Date(b.mostRecentShot).getTime() - new Date(a.mostRecentShot).getTime())
+      .slice(0, 20) // Limit to most recent 20
+      .map(roast => {
+        const dateDisplay = roast.mostRecentDate 
+          ? ` (Latest: ${format(new Date(roast.mostRecentDate), 'dd/MM/yyyy')})`
+          : '';
+        return {
+          value: roast.roastName,
+          label: `${roast.roastName}${dateDisplay}`
+        };
+      });
+  }, [shots]);
 
   return (
     <div className="bg-white border border-gray-200 rounded-[12.75px] p-6 mb-6">
@@ -55,10 +99,9 @@ export default function FiltersPanel({ filters, onFiltersChange }: FiltersPanelP
               className="w-full h-[31.5px] px-3 py-2 bg-gray-50 rounded-md border-0 text-[12.1px] font-normal text-gray-900 leading-[17.5px] appearance-none cursor-pointer"
             >
               <option value="">All Roasters</option>
-              <option value="Valencia">Valencia</option>
-              <option value="Stumptown Coffee">Stumptown Coffee</option>
-              <option value="Blue Bottle Coffee">Blue Bottle Coffee</option>
-              <option value="Intelligentsia">Intelligentsia</option>
+              {roasterOptions.map(roaster => (
+                <option key={roaster} value={roaster}>{roaster}</option>
+              ))}
             </select>
             <HiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500 opacity-50" />
           </div>
@@ -76,10 +119,9 @@ export default function FiltersPanel({ filters, onFiltersChange }: FiltersPanelP
               className="w-full h-[31.5px] px-3 py-2 bg-gray-50 rounded-md border-0 text-[12.1px] font-normal text-gray-900 leading-[17.5px] appearance-none cursor-pointer"
             >
               <option value="">All Roasts</option>
-              <option value="Standard">Standard</option>
-              <option value="Hair Bender">Hair Bender</option>
-              <option value="Bella Donovan">Bella Donovan</option>
-              <option value="Black Cat Classic">Black Cat Classic</option>
+              {roastOptions.map(roast => (
+                <option key={roast.value} value={roast.value}>{roast.label}</option>
+              ))}
             </select>
             <HiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500 opacity-50" />
           </div>

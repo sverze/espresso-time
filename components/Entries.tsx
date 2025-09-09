@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import FiltersPanel from './FiltersPanel';
 import { FilterOptions, EspressoShot } from '@/lib/types';
 import { useData } from '@/lib/dataContext';
-import { groupShotsByRoast, formatRatio, calculateAverageRating, calculateAverageRatio } from '@/lib/mockData';
+import { groupShotsByRoast, formatRatio, findBestShotsInGroups, calculatePerfectionScore } from '@/lib/mockData';
 import { format } from 'date-fns';
 
 interface EntriesProps {
@@ -22,7 +22,7 @@ export default function Entries({ onEditShot, onDeleteShot }: EntriesProps) {
     groupBy: 'roast-date'
   });
 
-  const filteredAndGroupedShots = useMemo(() => {
+  const { filteredAndGroupedShots, bestShotIds } = useMemo(() => {
     let filteredShots = [...shots];
 
     // Apply search filter
@@ -60,8 +60,14 @@ export default function Entries({ onEditShot, onDeleteShot }: EntriesProps) {
       }
     });
 
-    // Group shots
-    return groupShotsByRoast(filteredShots);
+    // Group shots and find best shots in each group
+    const groupedShots = groupShotsByRoast(filteredShots);
+    const bestShots = findBestShotsInGroups(groupedShots);
+    
+    return {
+      filteredAndGroupedShots: groupedShots,
+      bestShotIds: bestShots
+    };
   }, [filters, shots]);
 
   const formatDateTime = (dateTime: string) => {
@@ -80,18 +86,75 @@ export default function Entries({ onEditShot, onDeleteShot }: EntriesProps) {
     }
   };
 
+  // Get heat map styling for a shot
+  const getHeatMapStyling = (shot: EspressoShot, isBest: boolean) => {
+    const perfectionScore = calculatePerfectionScore(shot);
+    
+    if (isBest) {
+      // Best shot in group gets gold highlight
+      return {
+        className: 'bg-gradient-to-r from-amber-50 to-yellow-50 border-l-4 border-amber-400',
+        badge: (
+          <span className="inline-flex items-center px-2 py-1 bg-amber-100 text-amber-800 text-xs font-medium rounded-full ml-2">
+            ⭐ Best
+          </span>
+        )
+      };
+    } else if (perfectionScore > 0.8) {
+      // High scoring shots get green tint
+      return {
+        className: 'bg-green-50',
+        badge: null
+      };
+    } else if (perfectionScore > 0.6) {
+      // Medium scoring shots get light green tint
+      return {
+        className: 'bg-green-100/30',
+        badge: null
+      };
+    }
+    
+    // Default styling
+    return {
+      className: '',
+      badge: null
+    };
+  };
+
   return (
     <div className="max-w-[1626px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
       <FiltersPanel filters={filters} onFiltersChange={setFilters} />
       
+      {/* Heat Map Legend */}
+      <div className="bg-white border border-gray-200 rounded-[12.75px] p-4 mb-6">
+        <div className="flex items-center gap-6 text-xs">
+          <span className="font-medium text-gray-900">Heat Map:</span>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-gradient-to-r from-amber-50 to-yellow-50 border-l-2 border-amber-400 rounded"></div>
+            <span className="text-gray-700">⭐ Best shot per roast group</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-green-50 rounded"></div>
+            <span className="text-gray-700">High scoring (close to perfect 1:2 ratio & 10/10 rating)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-green-100/30 rounded"></div>
+            <span className="text-gray-700">Good scoring</span>
+          </div>
+        </div>
+      </div>
+      
       <div className="space-y-8">
         {filteredAndGroupedShots.map((group, groupIndex) => (
-          <div key={`${group.roasterName}-${group.roastName}-${groupIndex}`}>
+          <div key={`${group.roasterName}-${group.roastName}-${group.roastDate || 'unknown'}-${groupIndex}`}>
             {/* Group Header */}
             <div className="border-b border-gray-200 pb-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-[16.8px] font-semibold text-gray-900 leading-[22.5px]">
-                  {group.roasterName} - {group.roastName} ({formatDateHeader(group.date)})
+                  {group.roasterName} - {group.roastName} 
+                  {group.roastDate && (
+                    <span className="text-gray-600"> (Roast Date: {formatDateHeader(group.roastDate)})</span>
+                  )}
                 </h3>
                 <div className="flex items-center gap-6">
                   <div className="px-2 py-1 bg-gray-100 rounded-md">
@@ -139,10 +202,18 @@ export default function Entries({ onEditShot, onDeleteShot }: EntriesProps) {
                     </tr>
                   </thead>
                   <tbody>
-                    {group.shots.map((shot, shotIndex) => (
-                      <tr key={shot.id} className={shotIndex < group.shots.length - 1 ? 'border-b border-gray-200' : ''}>
+                    {group.shots.map((shot, shotIndex) => {
+                      const isBest = bestShotIds.has(shot.id);
+                      const heatMapStyle = getHeatMapStyling(shot, isBest);
+                      return (
+                      <tr key={shot.id} className={`${
+                        shotIndex < group.shots.length - 1 ? 'border-b border-gray-200' : ''
+                      } ${heatMapStyle.className}`}>
                         <td className="px-4 py-4 text-[12.1px] font-normal text-gray-900 leading-[14.5px]">
-                          {formatDateTime(shot.dateTime)}
+                          <div className="flex items-center">
+                            {formatDateTime(shot.dateTime)}
+                            {heatMapStyle.badge}
+                          </div>
                         </td>
                         <td className="px-4 py-4">
                           <div className="text-[12.1px] font-normal text-gray-900 leading-[14.5px]">
@@ -161,10 +232,17 @@ export default function Entries({ onEditShot, onDeleteShot }: EntriesProps) {
                           {shot.extractionTime}s
                         </td>
                         <td className="px-4 py-4">
-                          <div className="inline-flex items-center px-2 py-1 bg-green-50 rounded-md">
-                            <span className="text-[10.5px] font-normal text-green-900 leading-[13px]">
-                              {shot.rating}/10
-                            </span>
+                          <div className="flex items-center gap-2">
+                            <div className="inline-flex items-center px-2 py-1 bg-green-50 rounded-md">
+                              <span className="text-[10.5px] font-normal text-green-900 leading-[13px]">
+                                {shot.rating}/10
+                              </span>
+                            </div>
+                            {isBest && (
+                              <span className="text-[10px] font-medium text-amber-700">
+                                {Math.round(calculatePerfectionScore(shot) * 100)}% perfect
+                              </span>
+                            )}
                           </div>
                         </td>
                         <td className="px-4 py-4 text-[10.5px] font-normal text-gray-500 leading-[13px] max-w-[200px]">
@@ -188,7 +266,8 @@ export default function Entries({ onEditShot, onDeleteShot }: EntriesProps) {
                           </div>
                         </td>
                       </tr>
-                    ))}
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
