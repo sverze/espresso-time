@@ -75,6 +75,7 @@ export interface DynamoEspressoShot {
   rating: number;
   notes: string;
   usedMilk?: boolean;
+  frothLevel?: number;           // 0-8, only relevant when usedMilk is true
   createdAt: string;             // ISO string
   updatedAt: string;             // ISO string
 }

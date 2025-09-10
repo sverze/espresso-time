@@ -29,6 +29,7 @@ export class EspressoShotService {
       rating: item.rating,
       notes: item.notes,
       usedMilk: item.usedMilk,
+      frothLevel: item.frothLevel,
       createdAt: item.createdAt,
     };
   }
@@ -50,6 +51,7 @@ export class EspressoShotService {
       rating: shot.rating,
       notes: shot.notes,
       usedMilk: shot.usedMilk,
+      frothLevel: shot.frothLevel,
       createdAt: shot.createdAt,
       updatedAt: new Date().toISOString(),
     };

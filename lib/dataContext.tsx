@@ -120,8 +120,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const deleteShot = async (id: string) => {
     try {
       setError(null);
-      // TODO: Implement delete API endpoint
-      // For now, just remove locally
+      await espressoShotAPI.deleteShot(id);
       setShots(prev => prev.filter(shot => shot.id !== id));
       addToast({
         type: 'success',

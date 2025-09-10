@@ -52,4 +52,23 @@ export class EspressoShotAPI {
       throw error;
     }
   }
+
+  async deleteShot(id: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}?id=${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+        headers: this.getAuthHeaders(),
+      });
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Authentication required');
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error deleting espresso shot via API:', error);
+      throw error;
+    }
+  }
 }

@@ -86,6 +86,37 @@ export default function Entries({ onEditShot, onDeleteShot }: EntriesProps) {
     }
   };
 
+  // Format settings using acronyms
+  const formatSettings = (shot: EspressoShot) => {
+    const parts = [];
+    
+    // Grinder Setting
+    parts.push(`G:${shot.grinderSetting}`);
+    
+    // Grind Time (if available)
+    if (shot.grindTime) {
+      parts.push(`GT:${shot.grindTime}s`);
+    }
+    
+    // Shot Type
+    const shotTypeAbbr = shot.shotType === 'Single' ? 'S' : shot.shotType === 'Double' ? 'D' : 'L';
+    parts.push(`ST:${shotTypeAbbr}`);
+    
+    // Extraction Time
+    parts.push(`ET:${shot.extractionTime}s`);
+    
+    // Used Milk and Froth Level (if milk is used)
+    if (shot.usedMilk) {
+      if (shot.frothLevel !== undefined) {
+        parts.push(`M:${shot.frothLevel}`);
+      } else {
+        parts.push('M:Y');
+      }
+    }
+    
+    return parts.join(' • ');
+  };
+
   // Get heat map styling for a shot
   const getHeatMapStyling = (shot: EspressoShot, isBest: boolean) => {
     const perfectionScore = calculatePerfectionScore(shot);
@@ -95,8 +126,9 @@ export default function Entries({ onEditShot, onDeleteShot }: EntriesProps) {
       return {
         className: 'bg-gradient-to-r from-amber-50 to-yellow-50 border-l-4 border-amber-400',
         badge: (
-          <span className="inline-flex items-center px-2 py-1 bg-amber-100 text-amber-800 text-xs font-medium rounded-full ml-2">
-            ⭐ Best
+          <span className="inline-flex items-center px-2 py-1 bg-amber-100 text-amber-800 text-xs font-medium rounded-full ml-2 md:ml-2">
+            <span className="hidden md:inline">⭐ Best</span>
+            <span className="md:hidden">⭐</span>
           </span>
         )
       };
@@ -157,7 +189,7 @@ export default function Entries({ onEditShot, onDeleteShot }: EntriesProps) {
                   )}
                 </h3>
                 <div className="flex items-center gap-6">
-                  <div className="px-2 py-1 bg-gray-100 rounded-md">
+                  <div className="px-2 py-1 bg-gray-100 rounded-md hidden md:block">
                     <span className="text-[10.5px] font-medium text-gray-900 leading-[12px]">
                       {group.shotCount} shots
                     </span>
@@ -187,16 +219,13 @@ export default function Entries({ onEditShot, onDeleteShot }: EntriesProps) {
                       <th className="text-left px-4 py-3 text-[12.3px] font-medium text-gray-900 leading-[14.5px]">
                         Weights & Ratio
                       </th>
-                      <th className="text-left px-4 py-3 text-[12.1px] font-medium text-gray-900 leading-[14.5px]">
-                        Time
-                      </th>
                       <th className="text-left px-4 py-3 text-[12.3px] font-medium text-gray-900 leading-[14.5px]">
                         Rating
                       </th>
-                      <th className="text-left px-4 py-3 text-[12.3px] font-medium text-gray-900 leading-[14.5px]">
+                      <th className="text-left px-4 py-3 text-[12.3px] font-medium text-gray-900 leading-[14.5px] hidden md:table-cell">
                         Notes
                       </th>
-                      <th className="text-left px-4 py-3 text-[12.1px] font-medium text-gray-900 leading-[14.5px]">
+                      <th className="text-left px-4 py-3 text-[12.1px] font-medium text-gray-900 leading-[14.5px] hidden md:table-cell">
                         Actions
                       </th>
                     </tr>
@@ -206,18 +235,22 @@ export default function Entries({ onEditShot, onDeleteShot }: EntriesProps) {
                       const isBest = bestShotIds.has(shot.id);
                       const heatMapStyle = getHeatMapStyling(shot, isBest);
                       return (
-                      <tr key={shot.id} className={`${
-                        shotIndex < group.shots.length - 1 ? 'border-b border-gray-200' : ''
-                      } ${heatMapStyle.className}`}>
+                      <tr 
+                        key={shot.id} 
+                        className={`${
+                          shotIndex < group.shots.length - 1 ? 'border-b border-gray-200' : ''
+                        } ${heatMapStyle.className} cursor-pointer hover:bg-gray-50 md:cursor-auto md:hover:bg-transparent`}
+                        onClick={() => onEditShot(shot)}
+                      >
                         <td className="px-4 py-4 text-[12.1px] font-normal text-gray-900 leading-[14.5px]">
-                          <div className="flex items-center">
-                            {formatDateTime(shot.dateTime)}
+                          <div className="flex items-center justify-between md:justify-start">
+                            <span>{formatDateTime(shot.dateTime)}</span>
                             {heatMapStyle.badge}
                           </div>
                         </td>
                         <td className="px-4 py-4">
-                          <div className="text-[12.1px] font-normal text-gray-900 leading-[14.5px]">
-                            Grinder: {shot.grinderSetting}
+                          <div className="text-[10.5px] font-normal text-gray-900 leading-[13px]">
+                            {formatSettings(shot)}
                           </div>
                         </td>
                         <td className="px-4 py-4">
@@ -227,9 +260,6 @@ export default function Entries({ onEditShot, onDeleteShot }: EntriesProps) {
                           <div className="text-[10.5px] font-normal text-gray-500 leading-[13px] mt-1">
                             {formatRatio(shot.coffeeWeight, shot.outputWeight)}
                           </div>
-                        </td>
-                        <td className="px-4 py-4 text-[12.1px] font-normal text-gray-900 leading-[14.5px]">
-                          {shot.extractionTime}s
                         </td>
                         <td className="px-4 py-4">
                           <div className="flex items-center gap-2">
@@ -245,20 +275,26 @@ export default function Entries({ onEditShot, onDeleteShot }: EntriesProps) {
                             )}
                           </div>
                         </td>
-                        <td className="px-4 py-4 text-[10.5px] font-normal text-gray-500 leading-[13px] max-w-[200px]">
+                        <td className="px-4 py-4 text-[10.5px] font-normal text-gray-500 leading-[13px] max-w-[200px] hidden md:table-cell">
                           {shot.notes || 'No notes recorded'}
                         </td>
-                        <td className="px-4 py-4">
+                        <td className="px-4 py-4 hidden md:table-cell">
                           <div className="flex items-center space-x-2">
                             <button 
-                              onClick={() => onEditShot(shot)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onEditShot(shot);
+                              }}
                               className="text-[10.5px] font-normal text-blue-600 hover:text-blue-800 leading-[13px]"
                             >
                               Edit
                             </button>
                             <span className="text-gray-300">•</span>
                             <button 
-                              onClick={() => onDeleteShot(shot)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onDeleteShot(shot);
+                              }}
                               className="text-[10.5px] font-normal text-red-600 hover:text-red-800 leading-[13px]"
                             >
                               Delete

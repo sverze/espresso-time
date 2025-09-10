@@ -13,6 +13,7 @@ export interface EspressoShot {
   rating: number; // out of 10
   notes: string;
   usedMilk?: boolean;
+  frothLevel?: number; // 0-8, only relevant when usedMilk is true
   createdAt: string;
 }
 
@@ -106,6 +107,7 @@ export interface EspressoShotFormData {
   
   // Additional
   usedMilk: boolean;
+  frothLevel: number; // 0-8, defaults to 6
   notes: string;
 }
 

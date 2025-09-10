@@ -37,3 +37,26 @@ export const POST = withAuth(async (request: AuthenticatedRequest) => {
     );
   }
 });
+
+export const DELETE = withAuth(async (request: AuthenticatedRequest) => {
+  try {
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID parameter is required' },
+        { status: 400 }
+      );
+    }
+
+    await espressoShotService.deleteShot(id);
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error('API Error deleting espresso shot:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete espresso shot' },
+      { status: 500 }
+    );
+  }
+});

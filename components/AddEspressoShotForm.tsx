@@ -31,6 +31,7 @@ export default function AddEspressoShotForm({ onSubmit, onCancel, editingShot }:
         outputWeight: editingShot.outputWeight,
         rating: editingShot.rating,
         usedMilk: editingShot.usedMilk || false,
+        frothLevel: editingShot.frothLevel || 6,
         notes: editingShot.notes
       };
     }
@@ -48,6 +49,7 @@ export default function AddEspressoShotForm({ onSubmit, onCancel, editingShot }:
       outputWeight: 36,
       rating: 5,
       usedMilk: false,
+      frothLevel: 6,
       notes: ''
     };
   });
@@ -390,6 +392,25 @@ export default function AddEspressoShotForm({ onSubmit, onCancel, editingShot }:
             Used milk (making latte/cappuccino)
           </span>
         </label>
+
+        {formData.usedMilk && (
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-1">
+              Froth Level (0-8) *
+            </label>
+            <input
+              type="number"
+              min="0"
+              max="8"
+              value={formData.frothLevel}
+              onChange={(e) => updateFormData('frothLevel', parseInt(e.target.value))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 max-w-xs"
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              0 = No froth (flat white), 8 = Maximum froth (cappuccino)
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Tasting Notes */}
