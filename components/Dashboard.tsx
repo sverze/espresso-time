@@ -6,7 +6,7 @@ import GrinderPerformanceChart from './charts/GrinderPerformanceChart';
 import ExtractionTimeChart from './charts/ExtractionTimeChart';
 import RatioAnalysisChart from './charts/RatioAnalysisChart';
 import { useData } from '@/lib/dataContext';
-import { mockDashboardStats, calculateAverageRating, calculateAverageRatio } from '@/lib/mockData';
+import { calculateDashboardStats, calculateTopRoasts } from '@/lib/dashboardCalculations';
 import { 
   TbCoffee, 
   TbStar, 
@@ -19,41 +19,9 @@ import {
 export default function Dashboard() {
   const { shots } = useData();
   
-  const dashboardStats = useMemo(() => {
-    if (shots.length === 0) {
-      return {
-        totalShots: 0,
-        averageRating: 0,
-        averageRatio: 0,
-        favoriteRoaster: 'N/A',
-        averageGrindTime: 0
-      };
-    }
-
-    const totalShots = shots.length;
-    const averageRating = calculateAverageRating(shots);
-    const averageRatio = calculateAverageRatio(shots);
-    
-    // Find favorite roaster (most frequent)
-    const roasterCounts = shots.reduce((acc, shot) => {
-      acc[shot.roasterName] = (acc[shot.roasterName] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-    const favoriteRoaster = Object.entries(roasterCounts)
-      .sort(([,a], [,b]) => b - a)[0]?.[0] || 'N/A';
-    
-    // Calculate average grind time
-    const totalGrindTime = shots.reduce((sum, shot) => sum + (shot.grindTime || 15), 0);
-    const averageGrindTime = Math.round((totalGrindTime / totalShots) * 10) / 10;
-
-    return {
-      totalShots,
-      averageRating,
-      averageRatio,
-      favoriteRoaster,
-      averageGrindTime
-    };
-  }, [shots]);
+  const dashboardStats = useMemo(() => calculateDashboardStats(shots), [shots]);
+  
+  const topRoasts = useMemo(() => calculateTopRoasts(shots, 5), [shots]);
 
   return (
     <div className="max-w-[1344px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
@@ -147,29 +115,41 @@ export default function Dashboard() {
           <h3 className="text-[13px] font-normal text-gray-900 leading-[14px] mb-6">
             Top Performing Roasts
           </h3>
-          <div className="space-y-4">
-            {/* Placeholder for roast cards */}
-            <div className="p-3 border border-gray-200 rounded-lg">
-              <div className="font-medium text-gray-900">Black Cat Classic</div>
-              <div className="text-sm text-gray-500">Intelligentsia</div>
-              <div className="text-xs text-gray-500 mt-1">
-                1 shot • Best grinder setting: 11 • Avg ratio: 1:1.9
+          <div className="space-y-4 overflow-y-auto max-h-[300px]">
+            {topRoasts.length > 0 ? (
+              topRoasts.map((roast, index) => (
+                <div key={`roast-${index}-${roast.roasterName}-${roast.roastName}`} className="p-3 border border-gray-200 rounded-lg">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">{roast.roastName}</div>
+                      <div className="text-sm text-gray-500">
+                        {roast.roasterName}
+                        {roast.roastDate && (
+                          <span className="ml-2 text-xs text-gray-400">
+                            • Roasted {new Date(roast.roastDate).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {roast.shotCount} shot{roast.shotCount !== 1 ? 's' : ''} • 
+                        Best grinder: {roast.bestGrinderSetting} • 
+                        Avg ratio: 1:{roast.averageRatio} • 
+                        Rating: {roast.averageRating}/10
+                      </div>
+                    </div>
+                    <div className="text-xs text-amber-600 font-medium">
+                      #{index + 1}
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center text-gray-500 py-8">
+                <TbCoffee className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                <p className="text-sm">No shots recorded yet</p>
+                <p className="text-xs text-gray-400 mt-1">Add some espresso shots to see your top roasts</p>
               </div>
-            </div>
-            <div className="p-3 border border-gray-200 rounded-lg">
-              <div className="font-medium text-gray-900">Bella Donovan</div>
-              <div className="text-sm text-gray-500">Blue Bottle Coffee</div>
-              <div className="text-xs text-gray-500 mt-1">
-                1 shot • Best grinder setting: 12 • Avg ratio: 1:2.0
-              </div>
-            </div>
-            <div className="p-3 border border-gray-200 rounded-lg">
-              <div className="font-medium text-gray-900">Hair Bender</div>
-              <div className="text-sm text-gray-500">Stumptown Coffee</div>
-              <div className="text-xs text-gray-500 mt-1">
-                1 shot • Best grinder setting: 14 • Avg ratio: 1:2.1
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

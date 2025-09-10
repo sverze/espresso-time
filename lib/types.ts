@@ -70,6 +70,7 @@ export interface RatioAnalysisData {
 export interface TopRoast {
   roasterName: string;
   roastName: string;
+  roastDate?: string;
   shotCount: number;
   bestGrinderSetting: number;
   averageRatio: number;

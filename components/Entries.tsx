@@ -225,7 +225,7 @@ export default function Entries({ onEditShot, onDeleteShot }: EntriesProps) {
                       <th className="text-left px-4 py-3 text-[12.3px] font-medium text-gray-900 leading-[14.5px] hidden md:table-cell">
                         Notes
                       </th>
-                      <th className="text-left px-4 py-3 text-[12.1px] font-medium text-gray-900 leading-[14.5px] hidden md:table-cell">
+                      <th className="text-left px-4 py-3 text-[12.1px] font-medium text-gray-900 leading-[14.5px]">
                         Actions
                       </th>
                     </tr>
@@ -239,8 +239,7 @@ export default function Entries({ onEditShot, onDeleteShot }: EntriesProps) {
                         key={shot.id} 
                         className={`${
                           shotIndex < group.shots.length - 1 ? 'border-b border-gray-200' : ''
-                        } ${heatMapStyle.className} cursor-pointer hover:bg-gray-50 md:cursor-auto md:hover:bg-transparent`}
-                        onClick={() => onEditShot(shot)}
+                        } ${heatMapStyle.className} hover:bg-gray-50/50`}
                       >
                         <td className="px-4 py-4 text-[12.1px] font-normal text-gray-900 leading-[14.5px]">
                           <div className="flex items-center justify-between md:justify-start">
@@ -278,26 +277,51 @@ export default function Entries({ onEditShot, onDeleteShot }: EntriesProps) {
                         <td className="px-4 py-4 text-[10.5px] font-normal text-gray-500 leading-[13px] max-w-[200px] hidden md:table-cell">
                           {shot.notes || 'No notes recorded'}
                         </td>
-                        <td className="px-4 py-4 hidden md:table-cell">
-                          <div className="flex items-center space-x-2">
+                        <td className="px-4 py-4">
+                          {/* Desktop actions */}
+                          <div className="hidden md:flex items-center space-x-2">
                             <button 
                               onClick={(e) => {
                                 e.stopPropagation();
                                 onEditShot(shot);
                               }}
-                              className="text-[10.5px] font-normal text-blue-600 hover:text-blue-800 leading-[13px]"
+                              className="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded"
+                              title="Edit shot"
                             >
-                              Edit
+                              ✏️
                             </button>
-                            <span className="text-gray-300">•</span>
                             <button 
                               onClick={(e) => {
                                 e.stopPropagation();
                                 onDeleteShot(shot);
                               }}
-                              className="text-[10.5px] font-normal text-red-600 hover:text-red-800 leading-[13px]"
+                              className="p-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded"
+                              title="Delete shot"
                             >
-                              Delete
+                              🗑️
+                            </button>
+                          </div>
+                          {/* Mobile actions */}
+                          <div className="md:hidden flex items-center space-x-1">
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onEditShot(shot);
+                              }}
+                              className="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded"
+                              title="Edit shot"
+                            >
+                              ✏️
+                            </button>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onDeleteShot(shot);
+                              }}
+                              className="p-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded"
+                              title="Delete shot"
+                            >
+                              🗑️
                             </button>
                           </div>
                         </td>

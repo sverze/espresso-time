@@ -253,8 +253,8 @@ export default function AddEspressoShotForm({ onSubmit, onCancel, editingShot }:
               type="number"
               min="1"
               max="30"
-              value={formData.grinderSetting}
-              onChange={(e) => updateFormData('grinderSetting', parseInt(e.target.value))}
+              value={isNaN(formData.grinderSetting) ? '' : formData.grinderSetting}
+              onChange={(e) => updateFormData('grinderSetting', parseInt(e.target.value) || 0)}
               className={`w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                 errors.grinderSetting ? 'border-red-500' : 'border-gray-300'
               }`}
@@ -269,8 +269,8 @@ export default function AddEspressoShotForm({ onSubmit, onCancel, editingShot }:
             <input
               type="number"
               min="1"
-              value={formData.grindTime}
-              onChange={(e) => updateFormData('grindTime', parseInt(e.target.value))}
+              value={isNaN(formData.grindTime) ? '' : formData.grindTime}
+              onChange={(e) => updateFormData('grindTime', parseInt(e.target.value) || 0)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
             <p className="mt-1 text-xs text-gray-500">10-20s for double</p>
@@ -284,8 +284,8 @@ export default function AddEspressoShotForm({ onSubmit, onCancel, editingShot }:
               type="number"
               min="0"
               step="0.1"
-              value={formData.coffeeWeight}
-              onChange={(e) => updateFormData('coffeeWeight', parseFloat(e.target.value))}
+              value={isNaN(formData.coffeeWeight) ? '' : formData.coffeeWeight}
+              onChange={(e) => updateFormData('coffeeWeight', parseFloat(e.target.value) || 0)}
               className={`w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                 errors.coffeeWeight ? 'border-red-500' : 'border-gray-300'
               }`}
@@ -319,8 +319,8 @@ export default function AddEspressoShotForm({ onSubmit, onCancel, editingShot }:
             <input
               type="number"
               min="1"
-              value={formData.extractionTime}
-              onChange={(e) => updateFormData('extractionTime', parseInt(e.target.value))}
+              value={isNaN(formData.extractionTime) ? '' : formData.extractionTime}
+              onChange={(e) => updateFormData('extractionTime', parseInt(e.target.value) || 0)}
               className={`w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                 errors.extractionTime ? 'border-red-500' : 'border-gray-300'
               }`}
@@ -344,8 +344,8 @@ export default function AddEspressoShotForm({ onSubmit, onCancel, editingShot }:
               type="number"
               min="0"
               step="0.1"
-              value={formData.outputWeight}
-              onChange={(e) => updateFormData('outputWeight', parseFloat(e.target.value))}
+              value={isNaN(formData.outputWeight) ? '' : formData.outputWeight}
+              onChange={(e) => updateFormData('outputWeight', parseFloat(e.target.value) || 0)}
               className={`w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                 errors.outputWeight ? 'border-red-500' : 'border-gray-300'
               }`}
@@ -402,8 +402,8 @@ export default function AddEspressoShotForm({ onSubmit, onCancel, editingShot }:
               type="number"
               min="0"
               max="8"
-              value={formData.frothLevel}
-              onChange={(e) => updateFormData('frothLevel', parseInt(e.target.value))}
+              value={isNaN(formData.frothLevel) ? '' : formData.frothLevel}
+              onChange={(e) => updateFormData('frothLevel', parseInt(e.target.value) || 0)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 max-w-xs"
             />
             <p className="mt-1 text-xs text-gray-500">
